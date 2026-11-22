@@ -14,9 +14,9 @@ import sys
 from dataclasses import replace
 from pathlib import Path
 
+from a11y_replay.config import DEFAULT
 from a11y_replay.ingest.keys import load_keys
 from a11y_replay.segment import detect_changes
-from a11y_replay.config import DEFAULT
 from a11y_replay.sync import estimate_offset
 
 argv = sys.argv[1:]

@@ -93,6 +93,16 @@ def check_upload(path, max_mb: float = 60.0, max_seconds: float = 180.0):
     return None
 
 
+def _load_env() -> None:
+    """Read a .env file if python-dotenv is installed. A separate function so tests can switch it off: a developer's own .env
+    holds a real key, and the demo reloads it on every run."""
+    try:
+        from dotenv import load_dotenv
+    except ImportError:
+        return
+    load_dotenv()
+
+
 def _run_demo(example, video, keys, transcript, model, transcript_clock, show_passes, progress, examples, work) -> DemoResult:
     try:
         if example and example in examples:
@@ -110,11 +120,7 @@ def _run_demo(example, video, keys, transcript, model, transcript_clock, show_pa
 
         client = None
         if model and model != "none":
-            try:
-                from dotenv import load_dotenv
-                load_dotenv()
-            except ImportError:
-                pass
+            _load_env()
             if not os.environ.get("ANTHROPIC_API_KEY"):
                 return _fail(f"The model `{model}` needs ANTHROPIC_API_KEY (put it in a .env file) and it is not set. "
                              "Choose 'none' to run without a language model.")

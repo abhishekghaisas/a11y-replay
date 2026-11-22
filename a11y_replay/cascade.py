@@ -10,7 +10,6 @@ Every VLM call is counted so the report can state calls per minute of video and 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Iterable
 
 from a11y_replay.config import DEFAULT, Config

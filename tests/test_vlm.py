@@ -1,6 +1,5 @@
 """VLM layer tests. No network: the SDK is replaced by a fake object."""
 import base64
-import json
 import types
 
 import numpy as np

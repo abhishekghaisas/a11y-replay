@@ -4,7 +4,14 @@ import random
 import types
 
 from a11y_replay.ingest.keys import load_keys
-from a11y_replay.recorder import KeyLogger, QuietTerminal, build_parser, check_permissions, describe, marker_schedule
+from a11y_replay.recorder import (
+    KeyLogger,
+    QuietTerminal,
+    build_parser,
+    check_permissions,
+    describe,
+    marker_schedule,
+)
 
 Key = lambda name: types.SimpleNamespace(name=name)     # like pynput.keyboard.Key.tab
 Char = lambda ch: types.SimpleNamespace(char=ch)        # like pynput.keyboard.KeyCode(char="a")
@@ -128,7 +135,9 @@ def test_permission_check_does_not_crash_where_the_mac_apis_do_not_exist():
 def _pty():
     import unittest
     try:
-        import os, pty, termios  # noqa: F401
+        import os  # noqa: F401
+        import pty
+        import termios  # noqa: F401
         return pty.openpty()
     except (ImportError, OSError) as e:
         raise unittest.SkipTest(f"no pseudo-terminal here: {e}")
@@ -142,7 +151,9 @@ def test_terminal_echo_is_off_while_logging_and_restored_after():
         inside = termios.tcgetattr(slave)[3]
         assert not inside & termios.ECHO and not inside & termios.ICANON
         assert inside & termios.ISIG                      # Ctrl+C must keep working
-    assert termios.tcgetattr(slave)[3] == before
+    # Compare the flags that matter. macOS also sets a bookkeeping bit (PENDIN, 0x20000000) whenever the line mode changes.
+    mask = termios.ECHO | termios.ICANON | termios.ISIG
+    assert termios.tcgetattr(slave)[3] & mask == before & mask
 
 
 def test_keys_typed_into_the_terminal_during_logging_are_discarded_not_run_by_the_shell_afterwards():

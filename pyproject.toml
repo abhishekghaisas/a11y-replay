@@ -8,26 +8,23 @@ version = "0.1.0"
 description = "Video-based accessibility auditor: classical CV first, VLM only where needed."
 readme = "README.md"
 requires-python = ">=3.11"
+# The audit itself (video in, report out) needs only these. ffmpeg and Tesseract are programs, not Python packages:
+# install them with your system's package manager (brew install ffmpeg tesseract / apt install ffmpeg tesseract-ocr).
 dependencies = [
     "numpy",
     "opencv-python",
-    "scikit-image",
-    "ffmpeg-python",
-    "pydantic>=2",
-    "faster-whisper",
     "pytesseract",
-    "pandas",
-    "scikit-learn",
-    "matplotlib",
-    "gradio",
-    "python-dotenv",
 ]
 
 [project.optional-dependencies]
-vlm = ["anthropic"]
-benchmark = ["playwright", "axe-playwright-python", "pyttsx3"]
+asr = ["faster-whisper"]                      # transcribe a recording's own audio (--transcribe)
+vlm = ["anthropic", "python-dotenv"]          # let a language model decide unclear focus cases (--model)
+ui = ["gradio", "streamlit"]                  # the two demo UIs
+benchmark = ["playwright"]                    # generate the benchmark recordings
+record = ["pynput"]                           # the key logger
+schemas = ["pydantic>=2"]                     # a11y_replay/schemas.py (not used by the pipeline yet)
 dev = ["pytest", "ruff"]
-record = ["pynput"]
+all = ["faster-whisper", "anthropic", "python-dotenv", "gradio", "streamlit", "playwright", "pynput", "pydantic>=2", "pytest", "ruff"]
 
 [project.scripts]
 a11y-replay = "a11y_replay.audit:main"
@@ -38,6 +35,14 @@ include = ["a11y_replay*", "benchmark*", "eval*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]          # tests import each other as `tests.test_audit`; plain `pytest` needs the repository root on the path
 
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
+# A deliberate, narrow rule set: F (real errors: unused imports and variables, undefined names) and I (import order).
+# Ruff's broader default set flagged 95 things on this code, 74 of them opinionated style rules that conflict with choices made on
+# purpose (the demo catches broad exceptions so it never crashes live; the macOS permission checks must tolerate a missing framework).
+# Add rule families here when you want them enforced, and fix what they report.
+select = ["F", "I"]

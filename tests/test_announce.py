@@ -1,15 +1,24 @@
 """Seen-versus-heard tests on tiny synthetic videos. Needs the Tesseract program for OCR; the
 OCR-dependent tests are skipped (not passed) if it is missing."""
 import unittest
+from dataclasses import replace
 
 import cv2
 import numpy as np
 
-from dataclasses import replace
-
 from a11y_replay.config import DEFAULT
-from a11y_replay.detectors.announce import (Observation, content_conflict, detect_announcements, match_observations,
-                                            new_words, normalize, numbers_in, similarity, to_findings, word_coverage)
+from a11y_replay.detectors.announce import (
+    Observation,
+    content_conflict,
+    detect_announcements,
+    match_observations,
+    new_words,
+    normalize,
+    numbers_in,
+    similarity,
+    to_findings,
+    word_coverage,
+)
 from a11y_replay.events import KeyEvent, Utterance
 
 W, H, FPS = 640, 360, 25

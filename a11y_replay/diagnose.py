@@ -17,7 +17,6 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from a11y_replay.config import DEFAULT
 from a11y_replay.ingest.video import is_variable_frame_rate, normalize_to_cfr, probe, read_frame_at
 from a11y_replay.segment import detect_changes
 
@@ -84,7 +83,7 @@ def main(argv=None):
         keys_file = rec / "keys.jsonl"
         if keys_file.exists():
             rows = [json.loads(x) for x in keys_file.read_text().splitlines() if x.strip()]
-            print(f"\nKey log events in the same numeric range (KEY-LOG clock; the two clocks may differ):")
+            print("\nKey log events in the same numeric range (KEY-LOG clock; the two clocks may differ):")
             for r in rows:
                 if a.t0 - 0.5 <= r["t"] <= a.t1 + 0.5:
                     print(f"  {r['t']:7.2f}s  {r['key']}{'  (calibration flash)' if r.get('source') == 'marker' else ''}")

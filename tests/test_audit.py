@@ -214,7 +214,7 @@ def test_the_summary_says_up_front_when_checks_were_skipped(tmp_path):
     """Regression from reading a real report: '0 findings' was at the top and 'two of three checks never ran' was
     in a table at the bottom, so a skim looked like a clean bill of health."""
     rec = _recording(tmp_path / "rec", with_keys=False, transcript=None, toast=False, flash=False)
-    r = run_audit(rec, tmp_path / "out")
+    run_audit(rec, tmp_path / "out")
     page = (tmp_path / "out" / "report.html").read_text()
     top = page[:page.index('id="findings"')]
     assert "Only 1 of 3 available checks ran" in top and "does not mean the recording is clean" in top
@@ -271,6 +271,7 @@ def test_untrusted_clock_alignment_downgrades_focus_findings_to_review(tmp_path)
 def test_when_sync_is_not_trusted_the_console_lists_each_pair(tmp_path):
     import contextlib
     import io
+
     from a11y_replay.audit import main
     rec = _recording(tmp_path / "rec", flash=False, toast=False)
     _rewrite_keys(rec, [(1.5, "F9"), (2.5, "F9"), (6.0, "Tab")])
@@ -287,6 +288,7 @@ def test_a_big_unrelated_change_near_a_flash_time_is_not_counted_as_a_calibratio
     so the report claimed 2 calibration flashes although no marker was in the video."""
     import contextlib
     import io
+
     from a11y_replay.audit import main
     rec = _recording(tmp_path / "rec", flash=False, toast=False)
     out = cv2.VideoWriter(str(rec / "video2.avi"), cv2.VideoWriter_fourcc(*"MJPG"), FPS, (W, H))
@@ -316,6 +318,7 @@ def test_trusted_alignment_still_gives_a_real_finding(tmp_path):
 def test_the_console_shows_the_clock_sync_line(tmp_path, capsys=None):
     import contextlib
     import io
+
     from a11y_replay.audit import main
     rec = _recording(tmp_path / "rec", flash=False, toast=False)
     buf = io.StringIO()
@@ -385,6 +388,7 @@ def test_evidence_pictures_from_an_earlier_run_are_removed(tmp_path):
 def test_the_console_says_which_video_file_and_when_it_was_saved(tmp_path):
     import contextlib
     import io
+
     from a11y_replay.audit import main
     rec = _recording(tmp_path / "rec", flash=False, toast=False)
     buf = io.StringIO()

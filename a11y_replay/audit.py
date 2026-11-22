@@ -34,7 +34,13 @@ from a11y_replay.detectors.announce import match_observations, observe_changes
 from a11y_replay.detectors.flash import detect_flashes
 from a11y_replay.events import Utterance
 from a11y_replay.ingest.keys import load_keys
-from a11y_replay.ingest.video import blank_stretches, is_variable_frame_rate, normalize_to_cfr, probe, read_frame_at
+from a11y_replay.ingest.video import (
+    blank_stretches,
+    is_variable_frame_rate,
+    normalize_to_cfr,
+    probe,
+    read_frame_at,
+)
 from a11y_replay.segment import detect_changes
 from a11y_replay.sync import estimate_offset, estimate_offset_search
 from a11y_replay.vlm.client import VLMClient
@@ -289,7 +295,8 @@ def run_audit(recording_dir, out_dir=None, client: VLMClient | None = None, cfg:
         utts = load_or_transcribe(rec, whisper_model)
         source = f"speech recognition of audio.wav ({whisper_model})"
     elif transcribe:
-        from a11y_replay.ingest.audio import extract_audio, transcribe as asr
+        from a11y_replay.ingest.audio import extract_audio
+        from a11y_replay.ingest.audio import transcribe as asr
         wav = out / "audio_from_video.wav"
         if extract_audio(original_video, wav):
             utts = asr(wav, whisper_model)

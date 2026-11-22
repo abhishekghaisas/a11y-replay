@@ -1,10 +1,9 @@
 import contextlib
 import io
-
-import cv2
-
 import os
 import time
+
+import cv2
 
 from a11y_replay.diagnose import analysis_video, contact_sheet, main
 from tests.test_audit import _recording

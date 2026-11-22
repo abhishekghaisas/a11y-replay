@@ -12,6 +12,24 @@ from a11y_replay.demo import HEADERS, check_upload, find_examples, run_demo
 from tests.test_audit import _recording
 
 
+class _NoKeyNoDotenv:
+    """No API key in the environment, and the demo's .env loading switched off: a developer's own .env holds a real key and the
+    demo reloads it on every run, which silently put it back and made these tests depend on whose machine they ran on."""
+
+    def __enter__(self):
+        import a11y_replay.demo as demo_module
+        self.module, self.real = demo_module, demo_module._load_env
+        self.old_key = os.environ.pop("ANTHROPIC_API_KEY", None)
+        demo_module._load_env = lambda: None
+        return self
+
+    def __exit__(self, *exc):
+        self.module._load_env = self.real
+        if self.old_key is not None:
+            os.environ["ANTHROPIC_API_KEY"] = self.old_key
+        return False
+
+
 def test_find_examples_lists_only_folders_that_contain_a_video(tmp_path):
     (tmp_path / "recordings" / "a").mkdir(parents=True)
     (tmp_path / "recordings" / "a" / "video.mp4").write_bytes(b"x")
@@ -50,12 +68,8 @@ def test_nothing_chosen_gives_a_plain_instruction_not_a_crash():
 
 def test_a_model_without_an_api_key_is_refused_up_front(tmp_path):
     rec = _recording(tmp_path / "rec", toast=False)
-    old = os.environ.pop("ANTHROPIC_API_KEY", None)
-    try:
+    with _NoKeyNoDotenv():
         r = run_demo("ex", model="claude-sonnet-5-5", examples={"ex": str(rec)})
-    finally:
-        if old is not None:
-            os.environ["ANTHROPIC_API_KEY"] = old
     assert not r.ok and "ANTHROPIC_API_KEY" in r.summary and "none" in r.summary
 
 
@@ -162,12 +176,8 @@ def test_failed_runs_leave_nothing_behind_either(tmp_path):
     bad.write_bytes(b"not a video")
     assert not run_demo(None, video=str(bad), examples={}).ok       # unreadable upload
     rec = _recording(tmp_path / "rec", toast=False)
-    old_key = os.environ.pop("ANTHROPIC_API_KEY", None)
-    try:
+    with _NoKeyNoDotenv():
         refused = run_demo("ex", model="claude-sonnet-5-5", examples={"ex": str(rec)})   # a model with no key is refused up front
-    finally:
-        if old_key is not None:
-            os.environ["ANTHROPIC_API_KEY"] = old_key
     assert not refused.ok and "ANTHROPIC_API_KEY" in refused.summary
     assert _demo_dirs() == before
 

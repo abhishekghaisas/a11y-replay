@@ -5,12 +5,11 @@ import subprocess
 import unittest
 
 import cv2
-import numpy as np
 
 from a11y_replay.audit import run_audit
 from a11y_replay.ingest.video import frame_times, is_variable_frame_rate, normalize_to_cfr, probe
 from a11y_replay.segment import detect_changes
-from tests.test_audit import FPS, H, KEYS, W, _frame
+from tests.test_audit import FPS, KEYS, H, W, _frame
 
 SECONDS = 15.0
 

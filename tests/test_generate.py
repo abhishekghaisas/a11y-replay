@@ -1,9 +1,16 @@
 """Unit tests for the benchmark generator that need no browser."""
 import random
 
-from benchmark.generate import (STYLE_EXPECTED, Recorder, make_label, record_validated,
-                                scenario_focus_outline, scenario_focus_styles, scenario_status_messages_noisy)
 from a11y_replay.taxonomy import IssueType
+from benchmark.generate import (
+    STYLE_EXPECTED,
+    Recorder,
+    make_label,
+    record_validated,
+    scenario_focus_outline,
+    scenario_focus_styles,
+    scenario_status_messages_noisy,
+)
 
 
 class FakeKeyboard:

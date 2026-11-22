@@ -30,9 +30,8 @@ import argparse
 import json
 import random
 import statistics
-from pathlib import Path
-
 from dataclasses import replace
+from pathlib import Path
 
 from a11y_replay.config import DEFAULT
 from a11y_replay.detectors.announce import match_observations, observe_changes, similarity

@@ -10,7 +10,7 @@ from a11y_replay.detectors.focus import detect_focus
 from a11y_replay.events import KeyEvent
 from a11y_replay.ingest.video import blank_stretches, is_blank_frame
 from a11y_replay.vlm.client import MockClient
-from tests.test_audit import FPS, H, KEYS, W, _frame
+from tests.test_audit import FPS, KEYS, H, W, _frame
 
 
 def _video(path, black=((2.0, 9.0),), seconds=12.0, ring_at=None):
