@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Focus styles (hard focus-visibility cases)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font: 16px/1.4 system-ui, sans-serif; margin: 0; background: #f4f6f8; color: #1d2733; }
+  main { max-width: 640px; margin: 20px auto; background: #fff; padding: 20px 28px; border-radius: 8px; }
+  h1 { font-size: 22px; margin: 0 0 12px; }
+  .row { display: flex; align-items: center; gap: 16px; margin: 6px 0; min-height: 44px; }
+  .row .lbl { width: 190px; font-weight: 600; }
+  button { font-size: 16px; padding: 7px 20px; border: 0; border-radius: 4px; background: #e3e8ee;
+           color: #1d2733; cursor: pointer; }
+  a.link { color: #1a5bdb; text-decoration: none; padding: 7px 4px; font-size: 16px; }
+  input[type=text] { font-size: 16px; padding: 7px; border: 2px solid #8896a5; border-radius: 4px; width: 220px; }
+
+  /* Each control has exactly one focus style. Every rule sets the outline explicitly so the
+     browser default never leaks in. Ground truth for each style is in docs/labeling_guide.md. */
+  [data-style=strong_ring]     button:focus-visible { outline: 4px solid #ff9800; outline-offset: 3px; }
+  [data-style=box_shadow_ring] button:focus-visible { outline: none; box-shadow: 0 0 0 4px #1a73e8; }
+  [data-style=thin_dotted]     button:focus-visible { outline: 1px dotted #000; outline-offset: 2px; }
+  [data-style=underline]       a:focus-visible { outline: none; text-decoration: underline;
+                                                 text-decoration-thickness: 3px; text-underline-offset: 4px; }
+  [data-style=bg_change]       button:focus-visible { outline: none; background: #1d2733; color: #fff; }
+  [data-style=faint_ring]      button:focus-visible { outline: 2px solid #d9d9d9; outline-offset: 2px; }
+  [data-style=selection_only]  input:focus { outline: none; }  /* browser selects the text on Tab */
+  [data-style=subtle_color]    a:focus-visible { outline: none; color: #1e60e0; }
+  [data-style=none]            button:focus-visible { outline: none; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Settings</h1>
+  <div id="rows">
+    <div class="row" data-style="strong_ring"><span class="lbl">Strong ring</span><button type="button">Save</button></div>
+    <div class="row" data-style="box_shadow_ring"><span class="lbl">Shadow ring</span><button type="button">Apply</button></div>
+    <div class="row" data-style="thin_dotted"><span class="lbl">Thin dotted outline</span><button type="button">Export</button></div>
+    <div class="row" data-style="underline"><span class="lbl">Underline only</span><a class="link" href="#help">Help center</a></div>
+    <div class="row" data-style="bg_change"><span class="lbl">Background change</span><button type="button">Continue</button></div>
+    <div class="row" data-style="faint_ring"><span class="lbl">Faint ring</span><button type="button">Archive</button></div>
+    <div class="row" data-style="selection_only"><span class="lbl">Text selection only</span><input type="text" value="Alex Morgan" aria-label="Display name"></div>
+    <div class="row" data-style="subtle_color"><span class="lbl">Subtle color shift</span><a class="link" href="#terms">Terms</a></div>
+    <div class="row" data-style="none"><span class="lbl">No indicator</span><button type="button">Delete</button></div>
+  </div>
+</main>
+
+<div id="cal" aria-hidden="true" style="position:fixed;right:16px;bottom:16px;width:48px;height:48px;background:#d81b60;visibility:hidden"></div>
+<script>
+  /* Benchmark helper: the generator reorders the rows per sample so Tab order varies. */
+  window.setOrder = function (order) {
+    const box = document.getElementById("rows");
+    order.forEach((s) => box.appendChild(box.querySelector('[data-style="' + s + '"]')));
+  };
+  /* Benchmark calibration cue (not part of the UI under test): see Config.calibration_key. */
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "F9") return;
+    const c = document.getElementById("cal");
+    c.style.visibility = "visible";
+    setTimeout(() => { c.style.visibility = "hidden"; }, 200);
+  });
+</script>
+</body>
+</html>

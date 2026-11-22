@@ -1,0 +1,6 @@
+# What the HOSTED demo needs (Streamlit Community Cloud). The full development setup is pyproject.toml.
+# The audit path imports only cv2 and numpy; pytesseract is used by the status-message check.
+streamlit>=1.30
+opencv-python-headless>=4.8
+numpy>=1.24
+pytesseract>=0.3.10

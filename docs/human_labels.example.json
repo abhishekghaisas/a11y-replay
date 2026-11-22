@@ -1,0 +1,11 @@
+{
+  "recording": "checkout-flow",
+  "labeler": "Your name and role, e.g. 'J. Doe, accessibility tester'",
+  "independent": true,
+  "complete": true,
+  "issues": [
+    {"t": 12.4, "criterion": "2.4.7", "note": "Focus indicator disappears when Tab reaches the Pay button"},
+    {"t": 31.0, "criterion": "4.1.3", "note": "'Order placed' banner appears; the screen reader says nothing"},
+    {"t": 47.5, "criterion": "2.3.1", "note": "Promo banner flashes about 5 times a second"}
+  ]
+}

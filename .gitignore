@@ -1,0 +1,36 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.ipynb_checkpoints/
+# Generated benchmark data (commit the generator + seed, not the videos)
+benchmark/data/*
+!benchmark/data/.gitkeep
+eval/results/*
+!eval/results/.gitkeep
+*.mp4
+*.wav
+*.webm
+# Real recordings can contain private content; never commit by default
+recordings/
+
+# macOS litter, local secrets, other video/audio formats, and generated reports (a report embeds frames of whatever was on screen)
+.DS_Store
+.streamlit/secrets.toml
+*.mov
+*.m4a
+*.avi
+*.mkv
+audit_report/
+.vlm_cache/
+
+# Demo examples are synthetic and small; they must be committed (the hosted demo cannot generate them).
+!demo_examples/
+!demo_examples/**
+# ... but never a generated report, even inside an example folder
+demo_examples/**/audit_report/
+demo_examples/**/.DS_Store
+demo_examples/**/*.mov

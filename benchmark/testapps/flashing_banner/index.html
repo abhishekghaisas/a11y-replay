@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sale banner (flash test app)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font: 18px/1.5 system-ui, sans-serif; margin: 0; background: #f4f6f8; color: #1d2733; }
+  #banner { padding: 56px 32px; text-align: center; font-size: 40px; font-weight: 800;
+            background: #ffffff; color: #000000; transition: none; }
+  main { max-width: 640px; margin: 32px auto; padding: 0 16px; }
+</style>
+</head>
+<body>
+<div id="banner" role="img" aria-label="Big sale this weekend">BIG SALE THIS WEEKEND</div>
+<main>
+  <h1>Weekend deals</h1>
+  <p>Browse this week's featured items below.</p>
+</main>
+<script>
+  /* Called by the benchmark generator at a known time so ground truth is exact.
+     ?bug=1 : flashes white/black 10 transitions per second (5 flashes/s) for 2 s.
+              This exceeds the three-flashes-per-second limit of WCAG 2.3.1.
+     clean  : a slow 1 Hz pulse (hard negative: it moves, but is below the threshold). */
+  const bug = new URLSearchParams(location.search).get("bug") === "1";
+  const banner = document.getElementById("banner");
+  let timer = null;
+
+  function setDark(dark) {
+    banner.style.background = dark ? "#000000" : "#ffffff";
+    banner.style.color = dark ? "#ffffff" : "#000000";
+  }
+
+  window.startFlashing = function () {
+    const intervalMs = bug ? 100 : 500;   // bug: 10 toggles/s, clean: 2 toggles/s (1 flash/s)
+    let dark = false;
+    clearInterval(timer);
+    timer = setInterval(() => { dark = !dark; setDark(dark); }, intervalMs);
+    setTimeout(() => { clearInterval(timer); setDark(false); }, 2000);
+  };
+</script>
+<div id="cal" aria-hidden="true" style="position:fixed;right:16px;bottom:16px;width:48px;height:48px;background:#d81b60;visibility:hidden"></div>
+<script>
+  /* Benchmark calibration cue (not part of the UI under test): pressing F9 shows this marker for
+     0.2 s, so the video-to-key-log clock offset can be estimated even when the bug under test
+     produces no visible effect. Keep the key in sync with Config.calibration_key. */
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "F9") return;
+    const c = document.getElementById("cal");
+    c.style.visibility = "visible";
+    setTimeout(() => { c.style.visibility = "hidden"; }, 200);
+  });
+</script>
+</body>
+</html>

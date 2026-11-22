@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Account settings (focus test app)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font: 18px/1.5 system-ui, sans-serif; margin: 0; background: #f4f6f8; color: #1d2733; }
+  header { background: #1d2733; color: #fff; padding: 16px 32px; }
+  header a { color: #fff; }
+  main { max-width: 640px; margin: 32px auto; background: #fff; padding: 32px; border-radius: 8px; }
+  label { display: block; margin: 16px 0 4px; font-weight: 600; }
+  input[type=text], select { width: 100%; padding: 10px; font-size: 18px; border: 2px solid #8896a5; border-radius: 4px; }
+  .row { margin-top: 16px; }
+  button { font-size: 18px; padding: 10px 20px; border: 0; border-radius: 4px; background: #1a73e8; color: #fff; cursor: pointer; }
+  button.secondary { background: #e3e8ee; color: #1d2733; }
+
+  /* Default (accessible) behavior: a clearly visible focus indicator. */
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 4px solid #ff9800;
+    outline-offset: 3px;
+  }
+</style>
+<!-- INJECTED BUG (WCAG 2.4.7 Focus Visible): enabled with ?bug=1.
+     Removes the focus indicator on every focusable element and provides no alternative.
+     The caret and the browser's select-all highlight are also hidden: otherwise a text input
+     would still show where focus is, which would make the ground truth ambiguous. -->
+<script>
+  if (new URLSearchParams(location.search).get("bug") === "1") {
+    const s = document.createElement("style");
+    s.textContent =
+      "*:focus, *:focus-visible { outline: none !important; box-shadow: none !important; }" +
+      "input, select, button, a { caret-color: transparent !important; }" +
+      "::selection { background: transparent !important; color: inherit !important; }";
+    document.head.appendChild(s);
+  }
+</script>
+</head>
+<body>
+<header><a href="#main">Skip to settings</a></header>
+<main id="main">
+  <h1>Account settings</h1>
+  <label for="name">Display name</label>
+  <input id="name" type="text" value="Alex Morgan">
+  <div class="row"><label><input id="news" type="checkbox"> Email me product news</label></div>
+  <label for="lang">Language</label>
+  <select id="lang"><option>English</option><option>Español</option><option>Français</option></select>
+  <div class="row">
+    <button id="save" type="button">Save changes</button>
+    <button id="cancel" type="button" class="secondary">Cancel</button>
+  </div>
+</main>
+<div id="cal" aria-hidden="true" style="position:fixed;right:16px;bottom:16px;width:48px;height:48px;background:#d81b60;visibility:hidden"></div>
+<script>
+  /* Benchmark calibration cue (not part of the UI under test): pressing F9 shows this marker for
+     0.2 s, so the video-to-key-log clock offset can be estimated even when the bug under test
+     produces no visible effect. Keep the key in sync with Config.calibration_key. */
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "F9") return;
+    const c = document.getElementById("cal");
+    c.style.visibility = "visible";
+    setTimeout(() => { c.style.visibility = "hidden"; }, 200);
+  });
+</script>
+</body>
+</html>

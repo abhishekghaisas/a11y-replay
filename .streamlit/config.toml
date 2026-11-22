@@ -1,0 +1,5 @@
+[server]
+maxUploadSize = 60        # MB; the app also checks this itself
+
+[browser]
+gatherUsageStats = false

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Project dashboard (status message test app)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font: 18px/1.5 system-ui, sans-serif; margin: 0; background: #f4f6f8; color: #1d2733; }
+  main { max-width: 640px; margin: 28px auto; background: #fff; padding: 24px 32px; border-radius: 8px; min-height: 420px; }
+  h1 { font-size: 24px; margin: 0 0 12px; }
+  .row { display: flex; align-items: center; gap: 14px; margin: 14px 0; }
+  input[type=text] { font-size: 18px; padding: 8px; border: 2px solid #8896a5; border-radius: 4px; width: 260px; }
+  button { font-size: 18px; padding: 8px 20px; border: 0; border-radius: 4px; background: #1a73e8; color: #fff; }
+  button:focus, button:focus-visible { outline: none; }   /* focus is not what this app tests */
+
+  /* Each message kind has two identical-looking containers: one is a live region (a screen reader
+     announces what is inserted into it), the other is a plain element (nothing is announced).
+     The generator chooses which one a message goes into; the screen looks the same either way. */
+  .banner-slot { margin: 0 0 12px; min-height: 0; }
+  .banner { background: #fde8e8; color: #9b1c1c; border: 2px solid #f5b5b5; padding: 10px 16px; border-radius: 6px; font-weight: 600; }
+  .inline-slot { min-height: 0; margin-top: 4px; }
+  .inline { color: #4a5565; font-size: 18px; }
+  .toast-slot { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); }
+  .toast { background: #1d2733; color: #fff; padding: 12px 28px; border-radius: 8px; font-size: 20px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Project dashboard</h1>
+
+  <div class="banner-slot" id="banner-live" role="alert"></div>
+  <div class="banner-slot" id="banner-plain"></div>
+
+  <div class="row">
+    <input type="text" value="quarterly report" aria-label="Search files">
+    <button type="button" id="save">Save</button>
+  </div>
+
+  <div class="inline-slot" id="inline-live" role="status" aria-live="polite"></div>
+  <div class="inline-slot" id="inline-plain"></div>
+</main>
+
+<div class="toast-slot" id="toast-live" role="status" aria-live="polite"></div>
+<div class="toast-slot" id="toast-plain"></div>
+
+<div id="cal" aria-hidden="true" style="position:fixed;right:16px;bottom:16px;width:48px;height:48px;background:#d81b60;visibility:hidden"></div>
+<script>
+  /* Benchmark helpers. cfg = {kind: "toast"|"banner"|"inline", text: string, announced: boolean}. */
+  window.showStatus = function (cfg) {
+    const slot = document.getElementById(cfg.kind + (cfg.announced ? "-live" : "-plain"));
+    const el = document.createElement("div");
+    el.className = cfg.kind;
+    el.textContent = cfg.text;
+    slot.appendChild(el);
+    setTimeout(() => el.remove(), 3000);   // auto-dismiss, as real toasts do
+  };
+  /* For messages caused by a key press: arm the Save button, focus it from the generator, press Enter. */
+  window.armButton = function (cfg) {
+    const b = document.getElementById("save");
+    b.onclick = () => window.showStatus(cfg);
+  };
+
+  /* Benchmark calibration cue (not part of the UI under test): see Config.calibration_key. */
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "F9") return;
+    const c = document.getElementById("cal");
+    c.style.visibility = "visible";
+    setTimeout(() => { c.style.visibility = "hidden"; }, 200);
+  });
+</script>
+</body>
+</html>
